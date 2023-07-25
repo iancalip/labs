@@ -1,22 +1,27 @@
 require 'sinatra'
 require 'rack/handler/puma'
-require 'csv'
+require 'pg'
+require 'json'
 
-get '/tests' do
-  rows = CSV.read("./data.csv", col_sep: ';')
+set :public_folder, 'public'
 
-  columns = rows.shift
-
-  rows.map do |row|
-    row.each_with_object({}).with_index do |(cell, acc), idx|
-      column = columns[idx]
-      acc[column] = cell
-    end
-  end.to_json
+def db_connection
+  PG.connect(dbname: 'postgres', user: 'postgres', password: 'password', host: 'db')
 end
 
-get '/hello' do
-  'Hello world!'
+get '/tests/:token' do
+  token = params['token']
+  result = db_connection.exec_params('SELECT * FROM exams WHERE token_resultado_exame = $1', [token])
+  result.map { |result| result.to_h }.to_json
+end
+
+get '/tests' do
+  results = db_connection.exec('SELECT * FROM exams')
+  results.map { |result| result.to_h }.to_json
+end
+
+get '/' do
+  send_file File.join(settings.public_folder, 'index.html')
 end
 
 Rack::Handler::Puma.run(
