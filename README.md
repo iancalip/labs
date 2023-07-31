@@ -60,6 +60,10 @@ bash
 
 Para importar um arquivo CSV, você pode fazer uma solicitação POST para /import com o conteúdo do arquivo CSV no corpo da solicitação.
 
+Observação:
+A "feature 4" continuará recebendo implementações ao longo dos próximos dias,
+buscando atingir melhorias em seu algoritmo.
+
 ## API
 
 A aplicação fornece as seguintes rotas da API:
