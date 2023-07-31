@@ -2,6 +2,8 @@ require 'sinatra'
 require 'rack/handler/puma'
 require 'pg'
 require 'json'
+require './jobs/import_csv_job'
+require 'byebug'
 
 set :public_folder, 'public'
 
@@ -24,8 +26,17 @@ get '/' do
   send_file File.join(settings.public_folder, 'index.html')
 end
 
-Rack::Handler::Puma.run(
-  Sinatra::Application,
-  Port: 3000,
-  Host: '0.0.0.0'
-)
+post '/import' do
+  csv_content = request.body.read
+  ImportCsvJob.perform_async(csv_content)
+
+  [200, 'Importação bem sucedida']
+end
+
+if __FILE__ == $0
+  Rack::Handler::Puma.run(
+    Sinatra::Application,
+    Port: 3000,
+    Host: '0.0.0.0'
+  )
+end

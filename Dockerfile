@@ -1,5 +1,5 @@
 FROM ruby:3.2.2
-RUN apt-get update -qq && apt-get install -y postgresql-client
+RUN apt-get update -qq && apt-get install -y postgresql-client redis-server
 WORKDIR /labs
 COPY Gemfile /labs/Gemfile
 COPY Gemfile.lock /labs/Gemfile.lock
